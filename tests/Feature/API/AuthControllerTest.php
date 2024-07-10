@@ -49,3 +49,20 @@ it('should login a user with correct credentials', function () {
         ->assertJsonStructure(['access_token']);
 });
 
+it('shoud fails to log in with incorrect credentials', function () {
+    User::factory()->create([
+        'email' => 'test@example.com',
+        'password' => bcrypt('password'),
+    ]);
+
+    $data = [
+        'email' => 'test@example.com',
+        'password' => 'wrongpassword',
+    ];
+
+    $response = $this->postJson('/api/login', $data);
+
+    expect($response)
+        ->assertStatus(Response::HTTP_UNAUTHORIZED)
+        ->assertJson(['message' => 'Invalid credentials.']);
+});
