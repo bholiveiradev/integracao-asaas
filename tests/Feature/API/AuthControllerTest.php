@@ -66,3 +66,19 @@ it('shoud fails to login user with incorrect credentials', function () {
         ->assertStatus(Response::HTTP_UNAUTHORIZED)
         ->assertJson(['message' => 'Invalid credentials.']);
 });
+
+it('should returns the authenticated user', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user);
+
+    $response = $this->post('/api/me');
+
+    expect($response)
+        ->assertStatus(Response::HTTP_OK)
+        ->assertJson([
+            'id'    => $user->id,
+            'name'  => $user->name,
+            'email' => $user->email
+        ]);
+});
