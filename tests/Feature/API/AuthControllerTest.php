@@ -30,3 +30,22 @@ it('should fails to register a new user with invalid data', function () {
         ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
         ->assertJsonValidationErrors(['name', 'email', 'password', 'password_confirmation']);
 });
+
+it('should login a user with correct credentials', function () {
+    User::factory()->create([
+        'email' => 'test@example.com',
+        'password' => bcrypt('password'),
+    ]);
+
+    $data = [
+        'email' => 'test@example.com',
+        'password' => 'password',
+    ];
+
+    $response = $this->post('/api/login', $data);
+
+    expect($response)
+        ->assertStatus(Response::HTTP_OK)
+        ->assertJsonStructure(['access_token']);
+});
+
