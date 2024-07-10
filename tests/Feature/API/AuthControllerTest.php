@@ -94,3 +94,11 @@ it('should logout the user', function () {
         ->assertStatus(Response::HTTP_OK)
         ->assertJson(['message' => 'Successfully logged out.']);
 });
+
+it('should fail to logout if user is not logged in', function () {
+    $response = $this->postJson('/api/logout');
+
+    expect($response)
+        ->assertStatus(Response::HTTP_UNAUTHORIZED)
+        ->assertJson(['message' => 'Unauthenticated.']);
+});
