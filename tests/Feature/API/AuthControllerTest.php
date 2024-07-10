@@ -49,7 +49,7 @@ it('should login a user with correct credentials', function () {
         ->assertJsonStructure(['access_token']);
 });
 
-it('shoud fails to log in with incorrect credentials', function () {
+it('shoud fails to login user with incorrect credentials', function () {
     User::factory()->create([
         'email' => 'test@example.com',
         'password' => bcrypt('password'),
