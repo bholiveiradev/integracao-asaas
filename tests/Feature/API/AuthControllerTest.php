@@ -82,3 +82,15 @@ it('should returns the authenticated user', function () {
             'email' => $user->email
         ]);
 });
+
+it('should logout the user', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user);
+
+    $response = $this->post('/api/logout');
+
+    expect($response)
+        ->assertStatus(Response::HTTP_OK)
+        ->assertJson(['message' => 'Successfully logged out.']);
+});
