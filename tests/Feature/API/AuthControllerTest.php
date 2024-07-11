@@ -9,6 +9,7 @@ it('should register a new user', function () {
         'email' => 'johndoe@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
+        'cpf_cnpj' => '99999999999'
     ];
 
     $response = $this->post('/api/register', $data);
@@ -22,6 +23,7 @@ it('should fails to register a new user with invalid data', function () {
         'email' => 'invalid-email',
         'password' => '',
         'password_confirmation' => 'not_matching',
+        'cpf_cnpj' => ''
     ];
 
     $response = $this->postJson('/api/register', $data);
