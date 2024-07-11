@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\AuthLoginRequest;
-use App\Http\Requests\AuthRegisterRequest;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\{AuthLoginRequest, AuthRegisterRequest};
+use App\Http\Resources\UserResource;
+use Illuminate\Http\{JsonResponse, Request, Response};
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -24,7 +23,9 @@ class AuthController extends Controller
     {
         $data = $request->except('password_confirmation');
 
-        User::create($data);
+        $user = User::create($data);
+
+        $user->client()->create($data);
 
         return response()->json(['message' => 'User was created.'], Response::HTTP_CREATED);
     }
@@ -55,11 +56,13 @@ class AuthController extends Controller
      *
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return JsonResource
      */
-    public function me(Request $request): JsonResponse
+    public function me(Request $request): JsonResource
     {
-        return response()->json($request->user());
+        $user = $request->user();
+
+        return new UserResource($user);
     }
 
     /**

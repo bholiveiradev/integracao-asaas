@@ -22,10 +22,13 @@ class AuthRegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'      => 'required|string',
-            'email'     => 'required|email|unique:users',
-            'password'  => 'required|string|min:6',
-            'password_confirmation' => 'required|same:password'
+            'name'                  => 'required|string',
+            'email'                 => 'required|email|unique:users',
+            'password'              => 'required|string|min:6',
+            'password_confirmation' => 'required|same:password',
+            'cpf_cnpj'              => 'required|string|unique:clients,cpf_cnpj',
+            'phone'                 => 'nullable|string',
+            'mobile_phone'          => 'nullable|string',
         ];
     }
 }
