@@ -13,8 +13,15 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
+        $user = User::factory()->create([
             'name' => 'Test User',
+            'email' => 'test@example.com',
+        ]);
+
+        $user->client()->create([
+            'cpf_cnpj' => '99999999999',
+            'phone' => '1199999999',
+            'mobile_phone' => '11999999999',
             'email' => 'test@example.com',
         ]);
     }
