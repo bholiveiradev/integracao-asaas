@@ -2,7 +2,7 @@
 
 namespace App\Services\Payment\Contracts;
 
-interface PaymentProcessorInterface
+interface ProcessorInterface
 {
     public function process(array $data);
 }

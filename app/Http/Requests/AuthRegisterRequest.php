@@ -31,4 +31,11 @@ class AuthRegisterRequest extends FormRequest
             'mobile_phone'          => 'nullable|string|celular_com_ddd',
         ];
     }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'cpf_cnpj' => preg_replace("/[^0-9]/", '', $this->cpf_cnpj)
+        ]);
+    }
 }

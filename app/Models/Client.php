@@ -36,7 +36,7 @@ class Client extends Model
         return $this->hasMany(Payment::class);
     }
 
-    public function payment_gateway_settings(): HasMany
+    public function paymentGatewaySettings(): HasMany
     {
         return $this->hasMany(PaymentGatewaySetting::class);
     }
