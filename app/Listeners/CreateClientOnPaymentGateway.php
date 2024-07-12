@@ -37,6 +37,8 @@ class CreateClientOnPaymentGateway implements ShouldQueue
         );
 
         if ($response->ok()) {
+            $this->attribute->setData($response->collect());
+
             $client->paymentGatewaySettings()
                 ->create([
                     'name'              => $this->attribute->name(),
