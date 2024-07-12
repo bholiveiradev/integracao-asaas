@@ -6,10 +6,10 @@ it('should return the list of payments', function () {
     $user = User::factory()->create();
 
     $client = $user->client()->create([
-        'cpf_cnpj' => '56442819060',
-        'phone' => '1199999999',
-        'mobile_phone' => '11999999999',
-        'email' => 'test@example.com',
+        'cpf_cnpj' => fake()->cpf(),
+        'phone' => fake()->landlineNumber(),
+        'mobile_phone' => fake()->cellphoneNumber(),
+        'email' => $user->email,
     ]);
 
     Payment::factory(10)->create([
