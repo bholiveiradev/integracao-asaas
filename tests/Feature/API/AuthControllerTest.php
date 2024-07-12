@@ -5,11 +5,13 @@ use Illuminate\Http\Response;
 
 it('should register a new user', function () {
     $data = [
-        'name' => 'John Doe',
-        'email' => 'johndoe@example.com',
+        'name' => fake()->name,
+        'email' => fake()->unique()->safeEmail,
         'password' => 'password',
         'password_confirmation' => 'password',
-        'cpf_cnpj' => '99999999999'
+        'cpf_cnpj' => fake()->cpf(), // format: 059.949.230-95 or 05994923095
+        'phone' => fake()->landlineNumber(), // format: (11) 9999-9999
+        'mobile_phone' => fake()->cellphoneNumber(), // format: (11) 99999-9999
     ];
 
     $response = $this->post('/api/register', $data);
@@ -23,7 +25,9 @@ it('should fails to register a new user with invalid data', function () {
         'email' => 'invalid-email',
         'password' => '',
         'password_confirmation' => 'not_matching',
-        'cpf_cnpj' => ''
+        'cpf_cnpj' => '99999999999',
+        'phone' => '1199999999',
+        'mobile_phone' => '11999999999',
     ];
 
     $response = $this->postJson('/api/register', $data);
