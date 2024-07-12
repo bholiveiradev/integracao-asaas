@@ -2,32 +2,42 @@
 
 use App\Models\User;
 use Illuminate\Http\Response;
+use Tests\Traits\MockPaymentGateway;
+
+uses(MockPaymentGateway::class);
 
 it('should register a new user', function () {
     $data = [
-        'name' => fake()->name,
-        'email' => fake()->unique()->safeEmail,
-        'password' => 'password',
+        'name'                  => fake()->name,
+        'email'                 => fake()->unique()->safeEmail,
+        'password'              => 'password',
         'password_confirmation' => 'password',
-        'cpf_cnpj' => fake()->cpf(), // format: 059.949.230-95 or 05994923095
-        'phone' => fake()->landlineNumber(), // format: (11) 9999-9999
-        'mobile_phone' => fake()->cellphoneNumber(), // format: (11) 99999-9999
+        'cpf_cnpj'              => fake()->cpf(), // format: 059.949.230-95 or 05994923095
+        'phone'                 => fake()->landlineNumber(), // format: (11) 9999-9999
+        'mobile_phone'          => fake()->cellphoneNumber(), // format: (11) 99999-9999
     ];
+
+    $this->mockPaymentGatewayWithSuccess($data);
 
     $response = $this->post('/api/register', $data);
 
     expect($response)->assertStatus(Response::HTTP_CREATED);
+
+    $this->assertDatabaseHas('payment_gateway_settings', [
+            'name'              => 'Testing',
+            'gateway_client_id' => '123'
+        ]);
 });
 
 it('should fails to register a new user with invalid data', function () {
     $data = [
-        'name' => '',
-        'email' => 'invalid-email',
-        'password' => '',
+        'name'                  => '',
+        'email'                 => 'invalid-email',
+        'password'              => '',
         'password_confirmation' => 'not_matching',
-        'cpf_cnpj' => '99999999999',
-        'phone' => '1199999999',
-        'mobile_phone' => '11999999999',
+        'cpf_cnpj'              => '99999999999',
+        'phone'                 => '1199999999',
+        'mobile_phone'          => '11999999999',
     ];
 
     $response = $this->postJson('/api/register', $data);
@@ -39,13 +49,13 @@ it('should fails to register a new user with invalid data', function () {
 
 it('should login a user with correct credentials', function () {
     User::factory()->create([
-        'email' => 'test@example.com',
-        'password' => bcrypt('password'),
+        'email'     => 'test@example.com',
+        'password'  => bcrypt('password'),
     ]);
 
     $data = [
-        'email' => 'test@example.com',
-        'password' => 'password',
+        'email'     => 'test@example.com',
+        'password'  => 'password',
     ];
 
     $response = $this->post('/api/login', $data);
@@ -57,13 +67,13 @@ it('should login a user with correct credentials', function () {
 
 it('shoud fails to login user with incorrect credentials', function () {
     User::factory()->create([
-        'email' => 'test@example.com',
-        'password' => bcrypt('password'),
+        'email'     => 'test@example.com',
+        'password'  => bcrypt('password'),
     ]);
 
     $data = [
-        'email' => 'test@example.com',
-        'password' => 'wrongpassword',
+        'email'     => 'test@example.com',
+        'password'  => 'wrongpassword',
     ];
 
     $response = $this->postJson('/api/login', $data);
