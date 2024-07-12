@@ -29,9 +29,18 @@ trait MockPaymentGateway
             'create' => $mockResponse,
         ]));
 
-        app()->instance(AttributeInterface::class, Mockery::mock(AttributeInterface::class, [
-            'name' => 'Testing',
-            'id' => '123',
-        ]));
+        $attributeMock = Mockery::mock(AttributeInterface::class);
+        $attributeMock->shouldReceive('setData')
+            ->once()
+            ->with(Mockery::on(function ($arg) {
+                return is_array($arg) || $arg instanceof \Illuminate\Support\Collection;
+            }))
+            ->andReturn(null);
+        $attributeMock->shouldReceive('name')
+            ->andReturn('Testing');
+        $attributeMock->shouldReceive('id')
+            ->andReturn('123');
+
+        app()->instance(AttributeInterface::class, $attributeMock);
     }
 }
