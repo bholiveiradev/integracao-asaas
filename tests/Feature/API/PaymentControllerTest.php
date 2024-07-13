@@ -2,7 +2,7 @@
 
 use App\Models\{Payment, User};
 
-it('should return the list of payments', function () {
+it('should return the paginated list of payments', function () {
     $user = User::factory()->create();
 
     $client = $user->client()->create([
@@ -21,5 +21,10 @@ it('should return the list of payments', function () {
 
     $response = $this->get('/api/payments');
 
-    expect($response)->assertStatus(200);
+    expect($response)->assertStatus(200)
+        ->assertJsonStructure([
+            'data',
+            'links',
+            'meta',
+        ]);
 });
