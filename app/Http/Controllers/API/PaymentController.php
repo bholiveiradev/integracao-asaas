@@ -24,7 +24,7 @@ class PaymentController extends Controller
     {
         $user = $request->user();
 
-        $payments = $user->client->payments;
+        $payments = $user->client->payments()->paginate();
 
         return PaymentResource::collection($payments);
     }
