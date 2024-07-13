@@ -7,6 +7,7 @@ use App\Http\Resources\PaymentResource;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Gate;
 
 class PaymentController extends Controller
 {
@@ -30,10 +31,16 @@ class PaymentController extends Controller
     }
 
     public function show(Payment $payment)
-    {}
+    {
+        Gate::authorize('view', $payment);
 
-    public function store()
-    {}
+        return new PaymentResource($payment);
+    }
+
+    public function store(Request $request)
+    {
+
+    }
 
     public function delete(Payment $payment)
     {}
