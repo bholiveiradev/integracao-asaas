@@ -46,7 +46,7 @@ it('shoud return the payment by id', function () {
 
     $this->actingAs($user);
 
-    $response = $this->get('/api/payments/' . $payment->id);
+    $response = $this->get("/api/payments/{$payment->id}");
 
     expect($response)->assertStatus(Response::HTTP_OK);
 });
