@@ -30,7 +30,7 @@ it('should return the paginated list of payments', function () {
         ]);
 });
 
-it('shoud return the payment by id', function () {
+it('should return the payment by id', function () {
     $user = User::factory()->create();
 
     $client = $user->client()->create([
