@@ -50,3 +50,37 @@ it('should return the payment by id', function () {
 
     expect($response)->assertStatus(Response::HTTP_OK);
 });
+
+it('should return 404 error on not found payment', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user);
+
+    $response = $this->get("/api/payments/invalid-payment-id");
+
+    expect($response)->assertStatus(Response::HTTP_NOT_FOUND);
+});
+
+it('should return 403 error on not authorized payment view', function () {
+    $user = User::factory()->create();
+
+    $client = $user->client()->create([
+        'cpf_cnpj'      => fake()->cpf(), // format: 059.949.230-95 or 05994923095
+        'phone'         => fake()->landlineNumber(), // format: (11) 9999-9999
+        'mobile_phone'  => fake()->cellphoneNumber(), // format: (11) 99999-9999
+        'email'         => $user->email,
+    ]);
+
+    $payment = Payment::factory()->create([
+        'client_id' => $client->id
+    ]);
+
+    $unauthorizedUser = User::factory()->create();
+    $unauthorizedUser->client()->create();
+
+    $this->actingAs($unauthorizedUser);
+
+    $response = $this->get("/api/payments/{$payment->id}");
+
+    expect($response)->assertStatus(Response::HTTP_FORBIDDEN);
+});
