@@ -19,10 +19,20 @@ class UserSeeder extends Seeder
         ]);
 
         $user->client()->create([
-            'cpf_cnpj' => '99999999999',
-            'phone' => '1199999999',
-            'mobile_phone' => '11999999999',
-            'email' => 'test@example.com',
+            'cpf_cnpj'      => fake()->cpf(), // format: 059.949.230-95 or 05994923095
+            'phone'         => fake()->landlineNumber(), // format: (11) 9999-9999
+            'mobile_phone'  => fake()->cellphoneNumber(), // format: (11) 99999-9999
+            'email'         => $user->email,
         ]);
+
+        User::factory(10)->create()
+            ->each(function ($user) {
+                $user->client()->create([
+                    'cpf_cnpj'      => fake()->cpf(),
+                    'phone'         => fake()->landlineNumber(),
+                    'mobile_phone'  => fake()->cellphoneNumber(),
+                    'email'         => $user->email,
+                ]);
+            });
     }
 }

@@ -14,6 +14,7 @@ class Payment extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+        'gateway_name',
         'reference',
         'amount',
         'billing_type',

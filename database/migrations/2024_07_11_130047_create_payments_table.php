@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->uuid('id')->index();
             $table->foreignIdFor(Client::class)->constrained()->cascadeOnDelete();
-            $table->string('gateway_name')->index();
+            $table->string('gateway_name')->nullable();
             $table->string('reference')->nullable();
             $table->decimal('amount', 10, 2)->default(0);
             $table->string('billing_type')->nullable();
