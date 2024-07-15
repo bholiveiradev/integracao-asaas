@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignIdFor(Client::class)->constrained()->cascadeOnDelete();
             $table->string('gateway_name')->nullable();
             $table->string('reference')->nullable();
-            $table->decimal('amount', 10, 2)->default(0);
+            $table->decimal('amount', 16, 4)->default(0);
             $table->string('billing_type')->nullable();
             $table->string('status')->default('PENDING');
             $table->timestamp('paid_at')->nullable();

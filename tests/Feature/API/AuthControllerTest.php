@@ -6,6 +6,10 @@ use Tests\Traits\MockPaymentGateway;
 
 uses(MockPaymentGateway::class);
 
+beforeEach(function () {
+    $this->mockPaymentGatewayCustomer();
+});
+
 it('should register a new user', function () {
     $data = [
         'name'                  => fake()->name,
@@ -17,19 +21,34 @@ it('should register a new user', function () {
         'mobile_phone'          => fake()->cellphoneNumber(), // format: (11) 99999-9999
     ];
 
-    $this->mockPaymentGatewayWithSuccess($data);
-
     $response = $this->post('/api/register', $data);
 
-    expect($response)->assertStatus(Response::HTTP_CREATED);
-
-    $this->assertDatabaseHas('payment_gateway_settings', [
-            'name'              => 'Testing',
-            'gateway_client_id' => '123'
-        ]);
+    $response->assertStatus(Response::HTTP_CREATED);
 });
 
-it('should fails to register a new user with invalid data', function () {
+it('should create a new payment gateway setting', function () {
+    $user = User::factory()->create([
+        'name'      => fake()->name,
+        'email'     => fake()->unique()->safeEmail,
+        'password'  => bcrypt('password'),
+    ]);
+
+    $client = $user->client()->create([
+        'cpf_cnpj'      => fake()->cpf(),
+        'phone'         => fake()->landlineNumber(),
+        'mobile_phone'  => fake()->cellphoneNumber(),
+    ]);
+
+    $this->mockCreateCustomerOnPaymentGateway($client);
+
+    $this->assertDatabaseHas('payment_gateway_settings', [
+        'client_id'         => $client->id,
+        'name'              => 'Testing',
+        'gateway_client_id' => '123'
+    ]);
+});
+
+it('should fail to register a new user with invalid data', function () {
     $data = [
         'name'                  => '',
         'email'                 => 'invalid-email',
@@ -42,7 +61,7 @@ it('should fails to register a new user with invalid data', function () {
 
     $response = $this->postJson('/api/register', $data);
 
-    expect($response)
+    $response
         ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
         ->assertJsonValidationErrors(['name', 'email', 'password', 'password_confirmation']);
 });
@@ -60,12 +79,12 @@ it('should login a user with correct credentials', function () {
 
     $response = $this->post('/api/login', $data);
 
-    expect($response)
+    $response
         ->assertStatus(Response::HTTP_OK)
         ->assertJsonStructure(['access_token']);
 });
 
-it('shoud fails to login user with incorrect credentials', function () {
+it('should fail to login user with incorrect credentials', function () {
     User::factory()->create([
         'email'     => 'test@example.com',
         'password'  => bcrypt('password'),
@@ -78,19 +97,19 @@ it('shoud fails to login user with incorrect credentials', function () {
 
     $response = $this->postJson('/api/login', $data);
 
-    expect($response)
+    $response
         ->assertStatus(Response::HTTP_UNAUTHORIZED)
         ->assertJson(['message' => 'Invalid credentials.']);
 });
 
-it('should returns the authenticated user', function () {
+it('should return the authenticated user', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user);
 
     $response = $this->post('/api/me');
 
-    expect($response)
+    $response
         ->assertStatus(Response::HTTP_OK)
         ->assertJson([
             'id'    => $user->id,
@@ -106,7 +125,7 @@ it('should logout the user', function () {
 
     $response = $this->post('/api/logout');
 
-    expect($response)
+    $response
         ->assertStatus(Response::HTTP_OK)
         ->assertJson(['message' => 'Successfully logged out.']);
 });
@@ -114,7 +133,7 @@ it('should logout the user', function () {
 it('should fail to logout if user is not logged in', function () {
     $response = $this->postJson('/api/logout');
 
-    expect($response)
+    $response
         ->assertStatus(Response::HTTP_UNAUTHORIZED)
         ->assertJson(['message' => 'Unauthenticated.']);
 });

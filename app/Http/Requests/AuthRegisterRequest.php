@@ -14,6 +14,13 @@ class AuthRegisterRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'cpf_cnpj' => preg_replace("/[^0-9]/", '', $this->cpf_cnpj),
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -32,10 +39,12 @@ class AuthRegisterRequest extends FormRequest
         ];
     }
 
-    protected function prepareForValidation(): void
+    public function messages()
     {
-        $this->merge([
-            'cpf_cnpj' => preg_replace("/[^0-9]/", '', $this->cpf_cnpj)
-        ]);
+        return [
+            'cpf_cnpj.cpf_ou_cnpj' => 'The cpf cnpj field is not a valid CPF or CNPJ.',
+            'phone.telefone_com_ddd' => 'The phone field is not a phone with a valid area code.',
+            'mobile_phone.celular_com_ddd' => 'The mobile phone field is not a cell phone with a valid area code.',
+        ];
     }
 }

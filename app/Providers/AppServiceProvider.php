@@ -2,16 +2,17 @@
 
 namespace App\Providers;
 
-use App\Services\Payment\Contracts\{AttributeInterface, CustomerInterface, ProcessorInterface, SettingsInterface};
-use App\Services\Payment\Gateways\Asaas\{Attribute, Customer, Processor};
+use App\Services\Payment\Contracts\{GatewayCustomerInterface, GatewayBoletoMethodInterface,GatewayCreditCardMethodInterface, GatewayPixMethodInterface};
+use App\Services\Payment\Gateways\Asaas\{Customer, BoletoPaymentMethod, CreditCardPaymentMethod, PixPaymentMethod};
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
     public $bindings = [
-        CustomerInterface::class    => Customer::class,
-        ProcessorInterface::class   => Processor::class,
-        AttributeInterface::class   => Attribute::class,
+        GatewayCustomerInterface::class            => Customer::class,
+        GatewayBoletoMethodInterface::class        => BoletoPaymentMethod::class,
+        GatewayCreditCardMethodInterface::class    => CreditCardPaymentMethod::class,
+        GatewayPixMethodInterface::class           => PixPaymentMethod::class,
     ];
 
     /**
