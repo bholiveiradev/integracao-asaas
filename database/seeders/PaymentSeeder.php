@@ -27,7 +27,8 @@ class PaymentSeeder extends Seeder
                     'billing_type'  => $billingTypes[array_rand($billingTypes)],
                     'status'        => $statuses[array_rand($statuses)],
                     'external_url'  => 'http://example.com/external/payment',
-                    'gateway_name'  => 'Seeder'
+                    'gateway_name'  => 'Seeder',
+                    'processing'    => false,
                 ]);
             }
         });
