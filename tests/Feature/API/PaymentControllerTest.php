@@ -6,16 +6,18 @@ use Illuminate\Http\Response;
 it('should return the paginated list of payments', function () {
     $user = User::factory()->create();
 
-    $client = $user->client()->create([
-        'cpf_cnpj' => fake()->cpf(),
-        'phone' => fake()->landlineNumber(),
-        'mobile_phone' => fake()->cellphoneNumber(),
-        'email' => $user->email,
-    ]);
+    $client = $user->client()
+        ->create([
+            'cpf_cnpj'      => fake()->cpf(),
+            'phone'         => fake()->landlineNumber(),
+            'mobile_phone'  => fake()->cellphoneNumber(),
+            'email'         => $user->email,
+        ]);
 
     Payment::factory(10)->create([
-        'client_id' => $client->id,
-        'gateway_name' => 'testing'
+        'client_id'     => $client->id,
+        'gateway_name'  => 'Testing',
+        'processing'    => false,
     ]);
 
     $this->actingAs($user);
@@ -33,15 +35,17 @@ it('should return the paginated list of payments', function () {
 it('should return the payment by id', function () {
     $user = User::factory()->create();
 
-    $client = $user->client()->create([
-        'cpf_cnpj'      => fake()->cpf(), // format: 059.949.230-95 or 05994923095
-        'phone'         => fake()->landlineNumber(), // format: (11) 9999-9999
-        'mobile_phone'  => fake()->cellphoneNumber(), // format: (11) 99999-9999
-        'email'         => $user->email,
-    ]);
+    $client = $user->client()
+        ->create([
+            'cpf_cnpj'      => fake()->cpf(), // format: 059.949.230-95 or 05994923095
+            'phone'         => fake()->landlineNumber(), // format: (11) 9999-9999
+            'mobile_phone'  => fake()->cellphoneNumber(), // format: (11) 99999-9999
+            'email'         => $user->email,
+        ]);
 
     $payment = Payment::factory()->create([
-        'client_id' => $client->id
+        'client_id'     => $client->id,
+        'processing'    => false,
     ]);
 
     $this->actingAs($user);
@@ -64,15 +68,17 @@ it('should return 404 error on not found payment', function () {
 it('should return 403 error on not authorized payment view', function () {
     $user = User::factory()->create();
 
-    $client = $user->client()->create([
-        'cpf_cnpj'      => fake()->cpf(), // format: 059.949.230-95 or 05994923095
-        'phone'         => fake()->landlineNumber(), // format: (11) 9999-9999
-        'mobile_phone'  => fake()->cellphoneNumber(), // format: (11) 99999-9999
-        'email'         => $user->email,
-    ]);
+    $client = $user->client()
+        ->create([
+            'cpf_cnpj'      => fake()->cpf(), // format: 059.949.230-95 or 05994923095
+            'phone'         => fake()->landlineNumber(), // format: (11) 9999-9999
+            'mobile_phone'  => fake()->cellphoneNumber(), // format: (11) 99999-9999
+            'email'         => $user->email,
+        ]);
 
     $payment = Payment::factory()->create([
-        'client_id' => $client->id
+        'client_id'     => $client->id,
+        'processing'    => false,
     ]);
 
     $unauthorizedUser = User::factory()->create();
