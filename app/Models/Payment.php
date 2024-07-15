@@ -16,9 +16,12 @@ class Payment extends Model
     protected $fillable = [
         'gateway_name',
         'reference',
+        'description',
         'amount',
         'billing_type',
         'status',
+        'due_date',
+        'installment_count',
         'external_url',
     ];
 

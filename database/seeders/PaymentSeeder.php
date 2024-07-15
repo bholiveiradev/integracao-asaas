@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Payment;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class PaymentSeeder extends Seeder
 {
@@ -14,14 +15,21 @@ class PaymentSeeder extends Seeder
      */
     public function run(): void
     {
-        Payment::factory(20)->create([
-            'client_id'     => Client::all()->random()->id,
-            'reference'     => null,
-            'amount'        => rand(1, 1000),
-            'billing_type'  => array_rand(['PIX', 'BOLETO', 'CREDIT_CARD']),
-            'status'        => array_rand(['pending', 'paid', 'failed', 'cancelled', 'refunded']),
-            'external_url'  => null,
-            'gateway_name'  => 'Asaas'
-        ]);
+        Client::all()->each(function($client) {
+            $billingTypes = ['PIX', 'BOLETO', 'CREDIT_CARD'];
+            $statuses = ['PENDING', 'PAID', 'FAILED', 'CANCELLED', 'REFUNDED'];
+
+            for ($i = 0; $i < 10; $i++) {
+                Payment::factory()->create([
+                    'client_id'     => $client->id,
+                    'reference'     => Str::uuid(),
+                    'amount'        => rand(1, 999999999999),
+                    'billing_type'  => $billingTypes[array_rand($billingTypes)],
+                    'status'        => $statuses[array_rand($statuses)],
+                    'external_url'  => 'http://example.com/external/payment',
+                    'gateway_name'  => 'Seeder'
+                ]);
+            }
+        });
     }
 }

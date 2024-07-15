@@ -3,19 +3,19 @@
 namespace App\Listeners;
 
 use App\Events\ClientCreated;
-use App\Services\Payment\Contracts\AttributeInterface;
-use App\Services\Payment\Contracts\CustomerInterface;
+use App\Services\Payment\Contracts\GatewayCustomerInterface;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
 class CreateClientOnPaymentGateway implements ShouldQueue
 {
+    public $tries = 1;
+
     /**
      * Create the event listener.
      */
     public function __construct(
-        protected CustomerInterface $customerPayment,
-        private AttributeInterface $attribute,
+        protected GatewayCustomerInterface $gatewayCustomer,
     )
     {
         //
@@ -28,22 +28,6 @@ class CreateClientOnPaymentGateway implements ShouldQueue
     {
         $client = $event->client;
 
-        $response = $this->customerPayment->create(
-            name: $client->user->name,
-            cpfCnpj: $client->cpf_cnpj,
-            email: $client->email,
-            phone: $client->phone,
-            mobilePhone: $client->mobile_phone
-        );
-
-        if ($response->ok()) {
-            $this->attribute->setData($response->collect());
-
-            $client->paymentGatewaySettings()
-                ->create([
-                    'name'              => $this->attribute->name(),
-                    'gateway_client_id' => $this->attribute->id(),
-                ]);
-        }
+        $this->gatewayCustomer->create($client);
     }
 }
