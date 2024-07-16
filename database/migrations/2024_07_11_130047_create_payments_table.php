@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('amount', 16, 4)->default(0);
             $table->string('billing_type')->nullable();
             $table->string('status')->default('PENDING');
-            $table->timestamp('paid_at')->nullable();
+            $table->date('paid_at')->nullable();
             $table->string('external_url')->nullable();
             $table->timestamps();
             $table->softDeletes();

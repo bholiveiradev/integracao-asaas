@@ -29,6 +29,7 @@ class PaymentResource extends JsonResource
             'due_date'          => $this->due_date,
             'paid_at'           => Carbon::parse($this->paid_at)->format('d/m/Y H:i:s'),
             'external_url'      => $this->external_url,
+            'processing'        => $this->processing,
             'client'            => ClientResource::make($this->client),
         ];
     }

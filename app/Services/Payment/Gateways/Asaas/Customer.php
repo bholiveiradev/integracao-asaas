@@ -3,12 +3,12 @@
 namespace App\Services\Payment\Gateways\Asaas;
 
 use App\Models\Client;
-use App\Services\Payment\Contracts\GatewayCustomerInterface;
+use App\Services\Payment\Contracts\CustomerInterface;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Client\RequestException;
 
-class Customer implements GatewayCustomerInterface
+class Customer implements CustomerInterface
 {
     public function create(Client $client): void
     {
@@ -22,7 +22,6 @@ class Customer implements GatewayCustomerInterface
                 ]);
         } catch (RequestException $e) {
             Log::error($e->getMessage(), [
-                'user'      => auth()->user()->email,
                 'file'      => $e->getFile(),
                 'line'      => $e->getLine(),
                 'code'      => $e->getCode(),
@@ -31,7 +30,6 @@ class Customer implements GatewayCustomerInterface
             ]);
         } catch (\Throwable $e) {
             Log::error($e->getMessage(), [
-                'user'      => auth()->user()->email,
                 'file'      => $e->getFile(),
                 'line'      => $e->getLine(),
                 'code'      => $e->getCode(),

@@ -3,11 +3,11 @@
 namespace App\Listeners;
 
 use App\Events\ClientCreated;
-use App\Services\Payment\Contracts\GatewayCustomerInterface;
+use App\Services\Payment\Contracts\CustomerInterface;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class CreateClientOnPaymentGateway implements ShouldQueue
+class CreateClientOnGateway implements ShouldQueue
 {
     public $tries = 1;
 
@@ -15,7 +15,7 @@ class CreateClientOnPaymentGateway implements ShouldQueue
      * Create the event listener.
      */
     public function __construct(
-        protected GatewayCustomerInterface $gatewayCustomer,
+        protected CustomerInterface $gatewayCustomer,
     )
     {
         //

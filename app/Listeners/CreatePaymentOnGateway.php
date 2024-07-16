@@ -4,12 +4,11 @@ namespace App\Listeners;
 
 use App\Enums\BillingType;
 use App\Events\PaymentCreated;
-use App\Factories\PaymentGatewayFactory;
+use App\Factories\PaymentProcessorFactory;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Support\Facades\Log;
 
-class CreatePaymentOnPaymentGateway
+class CreatePaymentOnGateway implements ShouldQueue
 {
     /**
      * Create the event listener.
@@ -24,12 +23,11 @@ class CreatePaymentOnPaymentGateway
      */
     public function handle(PaymentCreated $event): void
     {
-        $data = $event->data;
-        $payment = $event->payment;
+        $data           = $event->data;
+        $payment        = $event->payment;
 
-        $billingType = BillingType::from($data['billing_type']);
-
-        $paymentGateway = PaymentGatewayFactory::create($billingType);
+        $billingType    = BillingType::from($data['billing_type']);
+        $paymentGateway = PaymentProcessorFactory::create($billingType);
 
         $paymentGateway->pay($payment, $data);
     }
