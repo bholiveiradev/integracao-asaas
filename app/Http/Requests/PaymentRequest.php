@@ -18,7 +18,15 @@ class PaymentRequest extends FormRequest
         return true;
     }
 
-    private function calculateInstallmentValue(float $amount, int $installmentCount)
+    /**
+     * Calculate the installments values.
+     *
+     * @param float $amount
+     * @param int $installmentCount
+     *
+     * @return array<float>
+     */
+    private function calculateInstallmentValue(float $amount, int $installmentCount): array
     {
         $installmentVl  = round($amount / $installmentCount, 4);
         $installmentCt  = array_fill(0, $installmentCount, $installmentVl);
@@ -30,6 +38,11 @@ class PaymentRequest extends FormRequest
         return $installmentCt;
     }
 
+    /**
+     * Prepare the data for validation.
+     *
+     * @return void
+     */
     protected function prepareForValidation(): void
     {
         $this->merge([
@@ -91,7 +104,11 @@ class PaymentRequest extends FormRequest
         return $rules;
     }
 
-    public function messages()
+    /**
+     * Get the error messages for the defined validation rules.
+     * @return array<string, string>
+     */
+    public function messages(): array
     {
         return [
             'card_number' => [
