@@ -2,5 +2,6 @@
 
 namespace App\Services\Payment\Contracts;
 
-interface GatewayBoletoMethodInterface
-{}
+interface CreditCardInterface
+{
+}

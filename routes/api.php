@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\PaymentController;
+use App\Http\Controllers\API\Webhooks\AsaasPaymentWebhookController;
 use Illuminate\Support\Facades\Route;
 
 // AUTH LOGIN | REGISTER
@@ -18,3 +19,6 @@ Route::middleware('auth:sanctum')->group(function() {
         ->except('update', 'destroy')
         ->names('payments');
 });
+
+// ASAAS PAYMENT WEBHOOK
+Route::post('payments/asaas/webhook', [AsaasPaymentWebhookController::class, 'handle']);

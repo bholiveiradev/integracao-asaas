@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Enums\BillingType;
 use App\Events\PaymentCreated;
-use App\Factories\PaymentGatewayFactory;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PaymentRequest;
 use App\Http\Resources\PaymentResource;
 use App\Http\Traits\ApiResponse;
 use App\Models\Payment;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
@@ -49,11 +46,9 @@ class PaymentController extends Controller
         try {
             DB::beginTransaction();
 
-            $client = $request->user()->client;
-
-            $data   = $request->validated();
-
-            $payment = $client->payments()->create($data);
+            $data       = $request->validated();
+            $client     = $request->user()->client;
+            $payment    = $client->payments()->create($data);
 
             PaymentCreated::dispatch($payment, $data);
 
@@ -66,28 +61,8 @@ class PaymentController extends Controller
             );
         } catch (\Throwable $e) {
             DB::rollBack();
-            throw $e;
-            // return $this->responseWithError($e);
+            return $this->responseWithError($e);
         }
-
-        /*
-            [customer] Identificador único do cliente no Asaas
-            string
-            required
-
-            [billingType] Forma de pagamento
-            string
-            required
-            Default: UNDEFINED
-
-            [value] Valor da cobrança
-            float
-            required
-
-            [dueDate] Data de vencimento da cobrança
-            date
-            required
-         */
     }
 
     public function delete(Payment $payment)

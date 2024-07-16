@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\{AuthLoginRequest, AuthRegisterRequest};
 use App\Http\Resources\UserResource;
 use Illuminate\Http\{JsonResponse, Request, Response};
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller

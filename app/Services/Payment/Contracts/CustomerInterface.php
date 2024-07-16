@@ -4,7 +4,7 @@ namespace App\Services\Payment\Contracts;
 
 use App\Models\Client;
 
-interface GatewayCustomerInterface
+interface CustomerInterface
 {
     public function create(Client $client);
 }

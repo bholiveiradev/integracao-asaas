@@ -3,19 +3,18 @@
 namespace App\Services\Payment\Gateways\Asaas;
 
 use App\Models\Payment;
-use App\Services\Payment\Contracts\{GatewayBoletoMethodInterface, GatewayPaymentInterface};
+use App\Services\Payment\Contracts\{ChargeInterface, ProcessorInterface};
 use Illuminate\Support\Facades\{Http, Log};
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Collection;
 
-class BoletoPaymentMethod implements GatewayBoletoMethodInterface, GatewayPaymentInterface
+class ChargeProcessor implements ChargeInterface, ProcessorInterface
 {
     public function pay(Payment $payment, array $data): void
     {
         try{
-            $client = auth()->user()->client;
-
-            $settings = $client->paymentGatewaySettings()
+            $settings = $payment->client
+                ->paymentGatewaySettings()
                 ->where('name', 'Asaas')
                 ->first();
 
@@ -25,12 +24,14 @@ class BoletoPaymentMethod implements GatewayBoletoMethodInterface, GatewayPaymen
 
             $response = $this->request($data);
 
-            if ($response->ok()) {
-                $this->updatePayment($payment, $response->collect());
-            }
+            $this->updatePayment($payment, $response->collect());
         } catch (RequestException $e) {
+            $payment->gateway_name  = 'Asaas';
+            $payment->status        = 'REQUEST_ERROR';
+            $payment->processing    = false;
+            $payment->save();
+
             Log::error($e->getMessage(), [
-                'user'      => auth()->user()->email,
                 'file'      => $e->getFile(),
                 'line'      => $e->getLine(),
                 'code'      => $e->getCode(),
@@ -38,8 +39,12 @@ class BoletoPaymentMethod implements GatewayBoletoMethodInterface, GatewayPaymen
                 'trace'     => $e->getTrace(),
             ]);
         } catch (\Throwable $e) {
+            $payment->gateway_name  = 'Asaas';
+            $payment->status        = 'INTERNAL_ERROR';
+            $payment->processing    = false;
+            $payment->save();
+
             Log::error($e->getMessage(), [
-                'user'      => auth()->user()->email,
                 'file'      => $e->getFile(),
                 'line'      => $e->getLine(),
                 'code'      => $e->getCode(),
@@ -69,6 +74,7 @@ class BoletoPaymentMethod implements GatewayBoletoMethodInterface, GatewayPaymen
         $payment->gateway_name  = 'Asaas';
         $payment->reference     = $data['id'];
         $payment->external_url  = $data['bankSlipUrl'];
+        $payment->processing    = false;
         $payment->save();
     }
 }

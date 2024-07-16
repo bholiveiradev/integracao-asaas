@@ -3,7 +3,7 @@
 namespace Tests\Traits;
 
 use App\Models\Client;
-use App\Services\Payment\Contracts\GatewayCustomerInterface;
+use App\Services\Payment\Contracts\CustomerInterface;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Mockery;
@@ -18,7 +18,7 @@ trait MockPaymentGateway
 {
     protected function mockPaymentGatewayCustomer()
     {
-        app()->instance(GatewayCustomerInterface::class, Mockery::mock(GatewayCustomerInterface::class, [
+        app()->instance(CustomerInterface::class, Mockery::mock(CustomerInterface::class, [
             'create' => function(Client $client) {
                 $data = [
                     'name'          => $client->user->name,
