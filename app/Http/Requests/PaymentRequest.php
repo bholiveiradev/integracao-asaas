@@ -50,13 +50,17 @@ class PaymentRequest extends FormRequest
             'postal_code'       => preg_replace("/[^0-9-]/", '', $this->postal_code),
             'due_date'          => Carbon::now()->addDays(5)->format('Y-m-d'),
             'installment_count' => $this->installment_count ?? 1,
-            'installment_value' => $this->calculateInstallmentValue($this->amount, $this->installment_count ?? 1)[0],
+            'installment_value' => $this->amount ? $this->calculateInstallmentValue($this->amount, $this->installment_count ?? 1)[0] : 0,
         ]);
 
         if ($this->billing_type === 'CREDIT_CARD') {
             $this->merge([
-                'card_expiration_month' => Carbon::createFromFormat('m/y', $this->card_expiration)->format('m'),
-                'card_expiration_year'  => Carbon::createFromFormat('m/y', $this->card_expiration)->format('Y'),
+                'card_expiration_month' => preg_match('/^\d{2}\/\d{2}$/', $this->card_expiration)
+                                            ? Carbon::createFromFormat('m/y', $this->card_expiration)->format('m')
+                                            : null,
+                'card_expiration_year'  => preg_match('/^\d{2}\/\d{2}$/', $this->card_expiration)
+                                            ? Carbon::createFromFormat('m/y', $this->card_expiration)->format('Y')
+                                            : null,
                 'cpf_cnpj'              => preg_replace("/[^0-9]/", '',$this->cpf_cnpj),
                 'postal_code'           => preg_replace("/[^0-9-]/", '',$this->postal_code),
                 'address_complement'    => $this->address_complement ?? '',
@@ -85,9 +89,9 @@ class PaymentRequest extends FormRequest
             $rules = array_merge($rules, [
                 'card_number'           => ['required', new CardNumber],
                 'card_holder_name'      => 'required|string|max:255',
-                'card_expiration'       => 'required|after:today',
-                'card_expiration_month' => 'required',
-                'card_expiration_year'  => 'required',
+                'card_expiration'       => 'required|date_format:m/y|after:today',
+                'card_expiration_month' => 'required|date_format:m|after:today',
+                'card_expiration_year'  => 'required|date_format:Y|after:today',
                 'cvv'                   => ['required', new CardCvc($this->input('card_number')),],
                 'name'                  => 'required|string|max:255',
                 'email'                 => 'required|string|email',

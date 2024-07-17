@@ -30,8 +30,8 @@ class Payment extends Model
     {
         parent::booted();
 
-        self::creating(function (Payment $model) {
-            $model->id = Str::uuid();
+        static::creating(function (Payment $model) {
+            $model->id = (string) Str::uuid();
         });
     }
 
