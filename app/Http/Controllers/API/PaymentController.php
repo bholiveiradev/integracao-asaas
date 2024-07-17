@@ -64,7 +64,4 @@ class PaymentController extends Controller
             return $this->responseWithError($e);
         }
     }
-
-    public function delete(Payment $payment)
-    {}
 }

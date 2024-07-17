@@ -2,10 +2,15 @@
 
 use App\Models\{Payment, User, Client};
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
-    $this->client = Client::factory()->create(['user_id' => $this->user->id]);
+    DB::beginTransaction();
+});
+
+afterEach(function () {
+    DB::rollBack();
 });
 
 it('should return the paginated list of payments', function () {
@@ -172,7 +177,14 @@ it('should return 422 error when billing type is CREDIT_CARD and invalid data', 
     expect($response)->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
 });
 
-it('should returns an error when store fails', function () {
+it('should handles exceptions during payment creation', function () {
+    Event::fake();
+
+    Mockery::mock(Client::class, function ($mock) {
+        $mock->shouldReceive('payments')
+             ->andThrow(new \Exception('Simulated error'));
+    });
+
     $user = User::factory()->create();
 
     $client = $user->client()->create([
@@ -182,17 +194,21 @@ it('should returns an error when store fails', function () {
         'email'         => $user->email,
     ]);
 
-    $response = $this->actingAs($user)
-                     ->postJson('/api/payments', [
-                         'amount' => null, // Dados inválidos para acionar um erro
-                         'description' => '',
-                     ]);
+    $paymentData = [
+        'gateway_name'      => 'Testing',
+        'reference'         => 'example_reference',
+        'description'       => 'Test payment',
+        'amount'            => 1000.00,
+        'billing_type'      => 'BOLETO',
+        'status'            => 'PENDING',
+        'installment_count' => 1,
+        'external_url'      => 'http://example.com',
+    ];
 
-    $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-             ->assertJsonStructure([
-                 'message',
-                 'errors'
-             ]);
+    $response = $this->actingAs($user)
+                     ->postJson('/api/payments', $paymentData);
+
+    expect($response)->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
 
     $this->assertDatabaseMissing('payments', [
         'client_id' => $client->id
