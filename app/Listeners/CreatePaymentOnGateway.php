@@ -23,14 +23,12 @@ class CreatePaymentOnGateway implements ShouldQueue
      */
     public function handle(PaymentCreated $event): void
     {
-        if (app()->environment('testing')) { return; }
-
         $data           = $event->data;
         $payment        = $event->payment;
 
         $billingType    = BillingType::from($data['billing_type']);
         $paymentGateway = PaymentProcessorFactory::create($billingType);
 
-        $paymentGateway->pay($payment, $data);
+        $paymentGateway->process($payment, $data);
     }
 }

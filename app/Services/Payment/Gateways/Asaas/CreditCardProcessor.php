@@ -6,11 +6,25 @@ use App\Models\Payment;
 use App\Services\Payment\Contracts\{CreditCardInterface, ProcessorInterface};
 use Illuminate\Support\Facades\{Http, Log};
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
 
 class CreditCardProcessor implements CreditCardInterface, ProcessorInterface
 {
-    public function pay(Payment $payment, array $data): void
+    public function __construct()
+    {
+        if (app()->environment('testing')) { return; }
+    }
+
+    /**
+     * Process the payment
+     *
+     * @param Payment $payment
+     * @param array $data
+     *
+     * @return void
+     */
+    public function process(Payment $payment, array $data): void
     {
         try{
             $settings = $payment->client
@@ -53,7 +67,15 @@ class CreditCardProcessor implements CreditCardInterface, ProcessorInterface
         }
     }
 
-    private function request(array $data)
+    /**
+     * Request to create a new payment
+     *
+     * @param array $data
+     *
+     * @return \Illuminate\Http\Client\Response
+     * @throws \Illuminate\Http\Client\RequestException
+     */
+    private function request(array $data): Response
     {
         return Http::withHeaders([
                 'Content-Type'  => 'application/json',
@@ -89,7 +111,15 @@ class CreditCardProcessor implements CreditCardInterface, ProcessorInterface
             ])->throw();
     }
 
-    private function updatePayment(Payment $payment, Collection $data)
+    /**
+     * Update payment
+     *
+     * @param Payment $payment
+     * @param Collection $data
+     *
+     * @return void
+     */
+    private function updatePayment(Payment $payment, Collection $data): void
     {
         $payment->gateway_name  = 'Asaas';
         $payment->reference     = $data['id'];

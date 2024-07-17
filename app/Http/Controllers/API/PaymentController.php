@@ -8,6 +8,7 @@ use App\Http\Requests\PaymentRequest;
 use App\Http\Resources\PaymentResource;
 use App\Http\Traits\ApiResponse;
 use App\Models\Payment;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
@@ -34,14 +35,28 @@ class PaymentController extends Controller
         return PaymentResource::collection($payments);
     }
 
-    public function show(Payment $payment)
+    /**
+     * The the payment
+     *
+     * @param Payment $payment
+     *
+     * @return JsonResource
+     */
+    public function show(Payment $payment): JsonResource
     {
         Gate::authorize('view', $payment);
 
         return new PaymentResource($payment);
     }
 
-    public function store(PaymentRequest $request)
+    /**
+     * Store a new payment
+     *
+     * @param PaymentRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function store(PaymentRequest $request): JsonResponse
     {
         try {
             DB::beginTransaction();
