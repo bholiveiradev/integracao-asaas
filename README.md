@@ -74,9 +74,15 @@ composer install
 ./vendor/bin/sail up -d
 ```
 
-5. Execute as migrations e seeders:
+5. Execute as migrations:
 ```sh
-./vendor/bin/sail artisan migrate --seed
+./vendor/bin/sail artisan migrate
+```
+> Opcionalmente, as migrations podem ser executadas com a opção `--seed`
+
+6. Gere a chave da aplicação:
+```sh
+./vendor/bin/sail artisan key:generate
 ```
 
 #### Passo 3: Configurar o ngrok
