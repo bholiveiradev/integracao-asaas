@@ -34,13 +34,31 @@ cd perfectpay
 ```
 #### Passo 2: Configurar o Laravel Sail
 
-1. Copie o arquivo .env.example para .env:
+1. Copie o arquivo `.env.example` para `.env`:
 ```sh
 cp .env.example .env
 ```
 
-2. Atualize as configurações no arquivo .env conforme necessário, incluindo as credenciais do Asaas e as configurações do banco de dados e de fila.
+2. Atualize as configurações no arquivo `.env` conforme necessário, incluindo as credenciais do Asaas e as configurações do banco de dados e de fila.
 ```sh
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=perfectpay
+DB_USERNAME=sail
+DB_PASSWORD=password
+
+SESSION_DRIVER=redis
+
+QUEUE_CONNECTION=redis
+
+CACHE_STORE=redis
+
+REDIS_CLIENT=phpredis
+REDIS_HOST=redis
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
 ASAAS_API_URL="https://sandbox.asaas.com/api/v3"
 ASAAS_API_KEY="\$aact_YTU5YTE0..."
 ASAAS_WEBHOOK_SIGNATURE=sua_assinatura_asaas_webhook
@@ -72,6 +90,11 @@ ngrok http <porta-da-aplicação>
 **Nota:** A porta padrão para o Laravel Sail é 80.
 
 3. Atualize a URL de webhook no Asaas com o URL fornecido pelo ngrok, conforme guia de integração: [Sobre os Webhooks](https://docs.asaas.com/docs/sobre-os-webhooks).
+
+4. Execute a fila em um terminal:
+```sh
+./vendor/bin/sail artisan queue:work
+```
 
 #### Passo 4: Configurar o Frontend
 
