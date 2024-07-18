@@ -1,66 +1,125 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Sistema de Processamento de Pagamentos
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este projeto é um sistema de processamento de pagamentos integrado ao ambiente de homologação do Asaas, oferecendo opções de pagamento por boleto, cartão e Pix. O projeto foi desenvolvido com PHP no framework Laravel 11 e inclui autenticação com Laravel Sanctum, processamento de pagamentos e cadastro de clientes no Asaas utilizando processamento assíncrono com filas. Também possui um endpoint para receber requisições do webhook do Asaas.\
+O ambiente de desenvolvimento está configurado via Laravel Sail, e os testes automatizados são realizados com Pest PHP, com cobertura principalmente sobre os recursos de criação e autenticação do usuário e os recursos de pagamento.\
+O frontend utiliza componentes Vue.js juntamente com Blade.
 
-## About Laravel
+### Funcionalidades
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Autenticação com Laravel Sanctum
+- Processamento de pagamentos via Boleto, Cartão e Pix utilizando filas para processamento assíncrono
+- Cadastro de clientes no Asaas utilizando filas para processamento assíncrono
+- Endpoint para receber requisições do webhook do Asaas
+- Utilização do ngrok para disponibilizar o ambiente online para o webhook
+- Frontend com Vue.js e Blade
+- Ambiente de desenvolvimento configurado com Laravel Sail
+- Testes automatizados com Pest PHP
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Requisitos
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP >= 8.2
+- Composer
+- Docker
+- Docker Compose
+- Node.js
+- NPM ou Yarn
+- Ngrok (para receber requisições de webhook)
 
-## Learning Laravel
+### Configuração do Ambiente de Desenvolvimento
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+#### Passo 1: Clonar o Repositório
+```sh
+git clone git@github.com:bholiveiradev/perfectpay.git
+cd perfectpay
+```
+#### Passo 2: Configurar o Laravel Sail
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+1. Copie o arquivo .env.example para .env:
+```sh
+cp .env.example .env
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+2. Atualize as configurações no arquivo .env conforme necessário, incluindo as credenciais do Asaas e as configurações do banco de dados e de fila.
+```sh
+ASAAS_API_URL="https://sandbox.asaas.com/api/v3"
+ASAAS_API_KEY="\$aact_YTU5YTE0..."
+ASAAS_WEBHOOK_SIGNATURE=sua_assinatura_asaas_webhook
+```
 
-## Laravel Sponsors
+3. Instale as dependências do composer:
+```sh
+composer install
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+4. Inicie os containers com o Laravel Sail:
+```sh
+./vendor/bin/sail up -d
+```
 
-### Premium Partners
+5. Execute as migrations e seeders:
+```sh
+./vendor/bin/sail artisan migrate --seed
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+#### Passo 3: Configurar o ngrok
 
-## Contributing
+1. Faça o download e instale o ngrok seguindo as instruções da [documentação oficial](https://ngrok.com/docs/getting-started/).
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+2. Inicie o ngrok para expor sua aplicação local:
+```sh
+ngrok http <porta-da-aplicação>
+```
+**Nota:** A porta padrão para o Laravel Sail é 80.
 
-## Code of Conduct
+3. Atualize a URL de webhook no Asaas com o URL fornecido pelo ngrok, conforme guia de integração: [Sobre os Webhooks](https://docs.asaas.com/docs/sobre-os-webhooks).
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### Passo 4: Configurar o Frontend
 
-## Security Vulnerabilities
+1. Instale as dependências do npm:
+```sh
+npm install
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+2. Execute o servidor de desenvolvimento do Vue.js:
+```sh
+npm run dev
+```
 
-## License
+#### Passo 5: Executar Testes Unitários
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Execute os testes automatizados com Pest PHP:
+```sh
+./vendor/bin/sail pest
+```
+> **Nota:** Se preferir, execute os testes automaizados com o coverage em html:
+```sh
+./vendor/bin/sail pest --coverage-html coverage/
+```
+Dessa forma, o pest criará uma pasta no root do projeto, basta exectar o `index.html` dentro da pasta `coverage` (se tiver o plugin live server no VS Code, basta clicar com o botão direito e "Open with Live Server").
+
+### Collection do Insomnia
+
+#### Import into Insomnia from the Swagger JSON file:
+- Abra o Insomnia.
+- Vá até Create > Import > Select `+ File`.
+- Arraste ou abra o arquivo `insomnia-collection.json` que está no root do projeto clique em Scan.
+
+### Endpoints Disponíveis
+#### Autenticação
+- POST /api/login - Endpoint para login de usuários
+- POST /api/register - Endpoint para registro de novos usuários
+- POST /api/me - Endpoint para retornar os dados do usuário autenticado
+- POST /api/logout - Endpoint para logout do usuário
+
+#### Processamento de Pagamentos
+- POST /api/payments - Endpoint para criação de pagamentos (boleto, cartão e Pix)
+- GET /api/payments - Endpoint para listar os pagamentos do usuário autenticado
+- GET /api/payments/{payment} - Endpoint para retornar um pagamento por ID
+
+#### Webhook
+- POST /api/payments/asaas/webhook - Endpoint para receber notificações de webhook do Asaas
+
+### Documentação
+- [Laravel Documentation](https://laravel.com/docs/11.x)
+- [Asaas API - Guia de Integração](https://docs.asaas.com/docs/pix)
+- [Ngrok Documentation](https://ngrok.com/docs/getting-started/)

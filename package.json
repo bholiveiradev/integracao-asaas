@@ -9,5 +9,13 @@
         "axios": "^1.6.4",
         "laravel-vite-plugin": "^1.0",
         "vite": "^5.0"
+    },
+    "dependencies": {
+        "@vitejs/plugin-vue": "^5.0.5",
+        "bootstrap": "^5.3.3",
+        "v-money": "^0.8.1",
+        "vue": "^3.4.31",
+        "vue-loader": "^17.4.2",
+        "vue-the-mask": "^0.11.1"
     }
 }

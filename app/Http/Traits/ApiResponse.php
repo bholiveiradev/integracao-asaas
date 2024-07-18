@@ -2,16 +2,36 @@
 
 namespace App\Http\Traits;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 
 trait ApiResponse
 {
-    public function responseWithSuccess($data = [], $successMessage = 'Request successful', $successCode = 200)
+
+    /**
+     * Response JSON with success
+     *
+     * @param array $data
+     * @param string $successMessage
+     * @param int $successCode
+     *
+     * @return JsonResponse
+     */
+    public function responseWithSuccess(array $data = [], string $successMessage = 'Request successful', int $successCode = 200): JsonResponse
     {
         return response()->json(['success' => true, 'message' => $successMessage, 'data' => $data], $successCode);
     }
 
-    public function responseWithError(\Throwable $error, $errorMessage = 'Internal Server Error', $errorCode = 500)
+    /**
+     * Response JSON with error
+     *
+     * @param \Throwable $error
+     * @param string $errorMessage
+     * @param int $errorCode
+     *
+     * @return JsonResponse
+     */
+    public function responseWithError(\Throwable $error, string $errorMessage = 'Internal Server Error', int $errorCode = 500): JsonResponse
     {
         Log::error($error->getMessage(), [
             'user'      => auth()->user()->email,

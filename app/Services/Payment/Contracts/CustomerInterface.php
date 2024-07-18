@@ -6,5 +6,12 @@ use App\Models\Client;
 
 interface CustomerInterface
 {
-    public function create(Client $client);
+    /**
+     * Create a new customer
+     *
+     * @param Client $client
+     *
+     * @return void
+     */
+    public function create(Client $client): void;
 }

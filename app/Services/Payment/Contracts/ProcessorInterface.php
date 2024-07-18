@@ -6,5 +6,13 @@ use App\Models\Payment;
 
 interface ProcessorInterface
 {
-    public function pay(Payment $payment, array $data);
+    /**
+     * Process the payment
+     *
+     * @param Payment $payment
+     * @param array $data
+     *
+     * @return void
+     */
+    public function process(Payment $payment, array $data): void;
 }

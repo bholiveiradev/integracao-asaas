@@ -29,6 +29,6 @@ class CreatePaymentOnGateway implements ShouldQueue
         $billingType    = BillingType::from($data['billing_type']);
         $paymentGateway = PaymentProcessorFactory::create($billingType);
 
-        $paymentGateway->pay($payment, $data);
+        $paymentGateway->process($payment, $data);
     }
 }

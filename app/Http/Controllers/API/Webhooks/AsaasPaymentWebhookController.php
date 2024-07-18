@@ -26,19 +26,19 @@ class AsaasPaymentWebhookController extends Controller
     {
         switch ($request->event) {
             case 'PAYMENT_CREATED':
-                $this->create($request);
+                self::create($request);
                 break;
             case 'PAYMENT_CONFIRMED':
             case 'PAYMENT_RECEIVED':
-                $this->updatePaid($request);
+                self::updatePaid($request);
                 break;
             case 'PAYMENT_DELETED':
-                $this->delete($request);
+                self::delete($request);
                 break;
         }
     }
 
-    private function create(Request $request): void
+    private static function create(Request $request): void
     {
         $payment = Payment::where('reference', $request->payment['id'])->first();
 
@@ -63,7 +63,7 @@ class AsaasPaymentWebhookController extends Controller
         ]);
     }
 
-    private function updatePaid(Request $request): void
+    private static function updatePaid(Request $request): void
     {
         $payment = Payment::where('reference', $request->payment['id'])->first();
 
@@ -80,7 +80,7 @@ class AsaasPaymentWebhookController extends Controller
         $payment->save();
     }
 
-    private function delete(Request $request): void
+    private static function delete(Request $request): void
     {
         $payment = Payment::where('reference', $request->payment['id'])->first();
         if (! $payment) { return; }

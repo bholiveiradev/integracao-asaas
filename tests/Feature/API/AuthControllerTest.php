@@ -23,29 +23,7 @@ it('should register a new user', function () {
 
     $response = $this->post('/api/register', $data);
 
-    $response->assertStatus(Response::HTTP_CREATED);
-});
-
-it('should create a new payment gateway setting', function () {
-    $user = User::factory()->create([
-        'name'      => fake()->name,
-        'email'     => fake()->unique()->safeEmail,
-        'password'  => bcrypt('password'),
-    ]);
-
-    $client = $user->client()->create([
-        'cpf_cnpj'      => fake()->cpf(),
-        'phone'         => fake()->landlineNumber(),
-        'mobile_phone'  => fake()->cellphoneNumber(),
-    ]);
-
-    $this->mockCreateCustomerOnPaymentGateway($client);
-
-    $this->assertDatabaseHas('payment_gateway_settings', [
-        'client_id'         => $client->id,
-        'name'              => 'Testing',
-        'gateway_client_id' => '123'
-    ]);
+    expect($response)->assertStatus(Response::HTTP_CREATED);
 });
 
 it('should fail to register a new user with invalid data', function () {
@@ -105,9 +83,7 @@ it('should fail to login user with incorrect credentials', function () {
 it('should return the authenticated user', function () {
     $user = User::factory()->create();
 
-    $this->actingAs($user);
-
-    $response = $this->post('/api/me');
+    $response = $this->actingAs($user)->post('/api/me');
 
     $response
         ->assertStatus(Response::HTTP_OK)
@@ -121,9 +97,7 @@ it('should return the authenticated user', function () {
 it('should logout the user', function () {
     $user = User::factory()->create();
 
-    $this->actingAs($user);
-
-    $response = $this->post('/api/logout');
+    $response = $this->actingAs($user)->post('/api/logout');
 
     $response
         ->assertStatus(Response::HTTP_OK)

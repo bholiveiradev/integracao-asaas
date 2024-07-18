@@ -7,9 +7,22 @@ use App\Services\Payment\Contracts\CustomerInterface;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Client\Response;
 
 class Customer implements CustomerInterface
 {
+    public function __construct()
+    {
+        if (app()->environment('testing')) { return; }
+    }
+
+     /**
+     * Create a new customer
+     *
+     * @param Client $client
+     *
+     * @return void
+     */
     public function create(Client $client): void
     {
         try {
@@ -44,9 +57,9 @@ class Customer implements CustomerInterface
      * @param Client $client
      *
      * @return \Illuminate\Http\Client\Response
-     * @throws \Illuminate\Http\Client\ConnectionException
+     * @throws \Illuminate\Http\Client\RequestException
      */
-    private function request(Client $client)
+    private function request(Client $client): Response
     {
         return Http::withHeaders([
                 'Content-Type'  => 'application/json',

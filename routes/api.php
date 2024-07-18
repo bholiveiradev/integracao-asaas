@@ -18,6 +18,8 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('payments', PaymentController::class)
         ->except('update', 'destroy')
         ->names('payments');
+
+    Route::get('payments/{payment}/pixQrCode', [PaymentController::class, 'getPixQrCode']);
 });
 
 // ASAAS PAYMENT WEBHOOK
