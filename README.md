@@ -41,6 +41,8 @@ cp .env.example .env
 
 2. Atualize as configurações no arquivo `.env` conforme necessário, incluindo as credenciais do Asaas e as configurações do banco de dados e de fila.
 ```sh
+APP_FAKER_LOCALE=pt_BR
+
 DB_CONNECTION=mysql
 DB_HOST=mysql
 DB_PORT=3306
