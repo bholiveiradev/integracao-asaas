@@ -128,14 +128,13 @@ Execute os testes automatizados com Pest PHP:
 ```
 Dessa forma, o pest criará uma pasta no root do projeto, basta exectar o `index.html` dentro da pasta `coverage` (se tiver o plugin live server no VS Code, basta clicar com o botão direito e "Open with Live Server").
 
-### Collection do Insomnia
-
-#### Import into Insomnia from the Swagger JSON file:
+### Importe a Collection do Insomnia
 - Abra o Insomnia.
 - Vá até Create > Import > Select `+ File`.
 - Arraste ou abra o arquivo `insomnia-collection.json` que está no root do projeto clique em Scan.
 
 ### Endpoints Disponíveis
+
 #### Autenticação
 - POST /api/login - Endpoint para login de usuários
 - POST /api/register - Endpoint para registro de novos usuários
