@@ -144,5 +144,5 @@ Dessa forma, o pest criará uma pasta no root do projeto, basta exectar o `index
 
 ### Documentação
 - [Laravel Documentation](https://laravel.com/docs/11.x)
-- [Asaas API - Guia de Integração](https://docs.asaas.com/docs/pix)
+- [Asaas API - Guia de Integração](https://docs.asaas.com/docs/)
 - [Ngrok Documentation](https://ngrok.com/docs/getting-started/)
