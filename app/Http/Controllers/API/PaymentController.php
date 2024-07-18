@@ -8,6 +8,7 @@ use App\Http\Requests\PaymentRequest;
 use App\Http\Resources\PaymentResource;
 use App\Http\Traits\ApiResponse;
 use App\Models\Payment;
+use App\Services\Payment\Gateways\Asaas\Pix;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -78,5 +79,23 @@ class PaymentController extends Controller
             DB::rollBack();
             return $this->responseWithError($e);
         }
+    }
+
+    /**
+     * Get PIX QR Code
+     *
+     * @param Payment $payment
+     *
+     * @return JsonResponse
+     */
+    public function getPixQrCode(Payment $payment): JsonResponse
+    {
+        try {
+            $pixQrCode = Pix::getPixQrCode($payment)->collect();
+            return response()->json(['pixQrCode' => $pixQrCode]);
+        } catch (\Throwable $e) {
+            return $this->responseWithError($e);
+        }
+
     }
 }

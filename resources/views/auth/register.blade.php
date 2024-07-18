@@ -1,6 +1,6 @@
 @extends('template.app')
 
-@section('title', 'Register')
+@section('title', 'Cadastrar Usuário')
 
 @section('content')
     <register-component></register-component>
