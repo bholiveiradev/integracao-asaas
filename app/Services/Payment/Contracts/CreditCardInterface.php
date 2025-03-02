@@ -2,6 +2,4 @@
 
 namespace App\Services\Payment\Contracts;
 
-interface CreditCardInterface
-{
-}
+interface CreditCardInterface {}

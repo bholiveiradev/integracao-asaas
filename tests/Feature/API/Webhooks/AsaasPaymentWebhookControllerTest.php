@@ -26,7 +26,7 @@ it('should accept requests with valid signature', function () {
 it('should create a payment when PAYMENT_CREATED event is received', function () {
     $user = User::factory()->create();
 
-    $client = $user->client()->create([
+    $customer = $user->customer()->create([
         'cpf_cnpj'      => fake()->cpf(),
         'phone'         => fake()->landlineNumber(),
         'mobile_phone'  => fake()->cellphoneNumber(),
@@ -35,8 +35,8 @@ it('should create a payment when PAYMENT_CREATED event is received', function ()
 
     PaymentGatewaySetting::factory()->create([
         'name'              => 'Testing',
-        'gateway_client_id' => '123456',
-        'client_id'         => $client->id
+        'gateway_customer_id' => '123456',
+        'customer_id'         => $customer->id
     ]);
 
     $data = [
@@ -66,7 +66,7 @@ it('should create a payment when PAYMENT_CREATED event is received', function ()
 it('should update a payment when PAYMENT_CONFIRMED event is received', function () {
     $user = User::factory()->create();
 
-    $client = $user->client()->create([
+    $customer = $user->customer()->create([
         'cpf_cnpj'      => fake()->cpf(),
         'phone'         => fake()->landlineNumber(),
         'mobile_phone'  => fake()->cellphoneNumber(),
@@ -74,7 +74,7 @@ it('should update a payment when PAYMENT_CONFIRMED event is received', function 
     ]);
 
     $payment = Payment::factory()->create([
-        'client_id'     => $client->id,
+        'customer_id'     => $customer->id,
         'reference'     => 'payment_id',
         'processing'    => false,
     ]);
@@ -104,7 +104,7 @@ it('should update a payment when PAYMENT_CONFIRMED event is received', function 
 it('should delete a payment when PAYMENT_DELETED event is received', function () {
     $user = User::factory()->create();
 
-    $client = $user->client()->create([
+    $customer = $user->customer()->create([
         'cpf_cnpj'      => fake()->cpf(),
         'phone'         => fake()->landlineNumber(),
         'mobile_phone'  => fake()->cellphoneNumber(),
@@ -112,7 +112,7 @@ it('should delete a payment when PAYMENT_DELETED event is received', function ()
     ]);
 
     $payment = Payment::factory()->create([
-        'client_id'     => $client->id,
+        'customer_id'     => $customer->id,
         'reference'     => 'payment_id',
         'processing'    => false,
     ]);

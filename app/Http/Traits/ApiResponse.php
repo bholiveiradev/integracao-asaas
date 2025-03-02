@@ -3,6 +3,7 @@
 namespace App\Http\Traits;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 trait ApiResponse
@@ -34,7 +35,7 @@ trait ApiResponse
     public function responseWithError(\Throwable $error, string $errorMessage = 'Internal Server Error', int $errorCode = 500): JsonResponse
     {
         Log::error($error->getMessage(), [
-            'user'      => auth()->user()->email,
+            'user'      => Auth::user()->email,
             'message'   => $error->getMessage(),
             'file'      => $error->getFile(),
             'line'      => $error->getLine(),

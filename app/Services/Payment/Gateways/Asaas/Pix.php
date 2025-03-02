@@ -4,30 +4,28 @@ namespace App\Services\Payment\Gateways\Asaas;
 
 use App\Models\Payment;
 use Illuminate\Http\Client\RequestException;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class Pix
 {
+    public function __construct(
+        private HttpClient $httpClient
+    ) {
+        if (app()->environment('testing')) { return; }
+    }
+
      /**
      * Request to get PIX QR Code
      *
      * @param Payment $payment
      *
      */
-    public static function getPixQrCode(Payment $payment)
+    public function getPixQrCode(Payment $payment)
     {
         try {
             $id = (string) $payment->reference;
 
-            return Http::withHeaders([
-                'Content-Type'  => 'application/json',
-                'Accept'        => 'application/json',
-                'User-Agent'    => config('app.name'),
-                'access_token'  => config('asaas.api_key'),
-            ])
-            ->get(config('asaas.api_url') . "/payments/{$id}/pixQrCode")
-            ->throw();
+            return $this->httpClient->get("/payments/{$id}/pixQrCode");
         } catch (RequestException $e) {
             Log::error($e->getMessage(), [
                 'file'      => $e->getFile(),

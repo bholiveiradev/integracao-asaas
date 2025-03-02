@@ -4,15 +4,16 @@ namespace App\Services\Payment\Gateways\Asaas;
 
 use App\Models\Payment;
 use App\Services\Payment\Contracts\{CreditCardInterface, ProcessorInterface};
-use Illuminate\Support\Facades\{Http, Log};
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
 
 class CreditCardProcessor implements CreditCardInterface, ProcessorInterface
 {
-    public function __construct()
-    {
+    public function __construct(
+        private HttpClient $httpClient
+    ) {
         if (app()->environment('testing')) { return; }
     }
 
@@ -27,23 +28,22 @@ class CreditCardProcessor implements CreditCardInterface, ProcessorInterface
     public function process(Payment $payment, array $data): void
     {
         try{
-            $settings = $payment->client
+            $settings = $payment->customer
                 ->paymentGatewaySettings()
-                ->where('name', 'Asaas')
+                ->where('name', 'ASAAS')
                 ->first();
 
             if (! $settings) { return; }
 
-            $data['customer'] = $settings->gateway_client_id;
+            $data['customer'] = $settings->gateway_customer_id;
 
             $response = $this->request($data);
 
             $this->updatePayment($payment, $response->collect());
         } catch (RequestException $e) {
-            $payment->gateway_name  = 'Asaas';
-            $payment->status        = 'REQUEST_ERROR';
-            $payment->processing    = false;
-            $payment->save();
+            $this->updatePayment($payment, [
+                'status' => 'REQUEST_ERROR',
+            ]);
 
             Log::error($e->getMessage(), [
                 'file'      => $e->getFile(),
@@ -53,10 +53,9 @@ class CreditCardProcessor implements CreditCardInterface, ProcessorInterface
                 'trace'     => $e->getTrace(),
             ]);
         } catch (\Throwable $e) {
-            $payment->gateway_name  = 'Asaas';
-            $payment->status        = 'INTERNAL_ERROR';
-            $payment->processing    = false;
-            $payment->save();
+            $this->updatePayment($payment, [
+                'status' => 'INTERNAL_ERROR',
+            ]);
 
             Log::error($e->getMessage(), [
                 'file'      => $e->getFile(),
@@ -77,12 +76,7 @@ class CreditCardProcessor implements CreditCardInterface, ProcessorInterface
      */
     private function request(array $data): Response
     {
-        return Http::withHeaders([
-                'Content-Type'  => 'application/json',
-                'Accept'        => 'application/json',
-                'User-Agent'    => config('app.name'),
-                'access_token'  => config('asaas.api_key'),
-            ])->post(config('asaas.api_url') . '/payments',[
+        return $this->httpClient->post('/payments',[
                 'customer'              => $data['customer'],
                 'billingType'           => $data['billing_type'],
                 'value'                 => $data['amount'],
@@ -115,16 +109,17 @@ class CreditCardProcessor implements CreditCardInterface, ProcessorInterface
      * Update payment
      *
      * @param Payment $payment
-     * @param Collection $data
+     * @param Collection|array $data
      *
      * @return void
      */
-    private function updatePayment(Payment $payment, Collection $data): void
+    private function updatePayment(Payment $payment, Collection|array $data): void
     {
-        $payment->gateway_name  = 'Asaas';
-        $payment->reference     = $data['id'];
-        $payment->external_url  = $data['bankSlipUrl'];
-        $payment->processing    = false;
+        $payment->gateway_name  = 'ASAAS';
+        $payment->reference     = $data['id'] ?? null;
+        $payment->external_url  = $data['bankSlipUrl'] ?? null;
+        $payment->status        = $data['status'];
+        $payment->processing    = $data['processing'] ?? false;
         $payment->save();
     }
 }

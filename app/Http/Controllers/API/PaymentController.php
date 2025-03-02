@@ -20,6 +20,12 @@ class PaymentController extends Controller
 {
     use ApiResponse;
 
+    public function __construct(
+        private Pix $pixService
+    ) {
+
+    }
+
     /**
      * Return the list of payments
      *
@@ -29,9 +35,8 @@ class PaymentController extends Controller
      */
     public function index(Request $request): JsonResource
     {
-        $client = $request->user()->client;
-
-        $payments = $client->payments()->orderBy('created_at', 'desc')->paginate();
+        $customer = $request->user()->customer;
+        $payments = $customer->payments()->orderBy('created_at', 'desc')->paginate();
 
         return PaymentResource::collection($payments);
     }
@@ -63,8 +68,8 @@ class PaymentController extends Controller
             DB::beginTransaction();
 
             $data       = $request->validated();
-            $client     = $request->user()->client;
-            $payment    = $client->payments()->create($data);
+            $customer   = $request->user()->customer;
+            $payment    = $customer->payments()->create($data);
 
             PaymentCreated::dispatch($payment, $data);
 
@@ -91,7 +96,10 @@ class PaymentController extends Controller
     public function getPixQrCode(Payment $payment): JsonResponse
     {
         try {
-            $pixQrCode = Pix::getPixQrCode($payment)->collect();
+            $pixQrCode = $this->pixService
+                ->getPixQrCode($payment)
+                ->collect();
+
             return response()->json(['pixQrCode' => $pixQrCode]);
         } catch (\Throwable $e) {
             return $this->responseWithError($e);

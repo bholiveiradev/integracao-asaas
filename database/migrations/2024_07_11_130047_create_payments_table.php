@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Client;
+use App\Models\Customer;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->uuid('id')->index();
-            $table->foreignIdFor(Client::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
             $table->string('gateway_name')->nullable();
             $table->string('reference')->nullable();
             $table->decimal('amount', 16, 4)->default(0);

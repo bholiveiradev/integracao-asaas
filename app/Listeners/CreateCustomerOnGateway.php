@@ -2,12 +2,12 @@
 
 namespace App\Listeners;
 
-use App\Events\ClientCreated;
+use App\Events\CustomerCreated;
 use App\Services\Payment\Contracts\CustomerInterface;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class CreateClientOnGateway implements ShouldQueue
+class CreateCustomerOnGateway implements ShouldQueue
 {
     public $tries = 1;
 
@@ -24,10 +24,8 @@ class CreateClientOnGateway implements ShouldQueue
     /**
      * Handle the event.
      */
-    public function handle(ClientCreated $event): void
+    public function handle(CustomerCreated $event): void
     {
-        $client = $event->client;
-
-        $this->gatewayCustomer->create($client);
+        $this->gatewayCustomer->create($event->customer);
     }
 }

@@ -44,12 +44,12 @@ class AsaasPaymentWebhookController extends Controller
 
         if ($payment) { return; }
 
-        $client = PaymentGatewaySetting::where(
-            'gateway_client_id', $request->payment['customer']
-        )->first()->client;
+        $customer = PaymentGatewaySetting::where(
+            'gateway_customer_id', $request->payment['customer']
+        )->first()->customer;
 
-        $client->payments()->create([
-            'gateway_name'      => 'Asaas',
+        $customer->payments()->create([
+            'gateway_name'      => 'ASAAS',
             'reference'         => $request->payment['id'],
             'description'       => $request->payment['description'],
             'amount'            => $request->payment['value'],
@@ -83,7 +83,9 @@ class AsaasPaymentWebhookController extends Controller
     private static function delete(Request $request): void
     {
         $payment = Payment::where('reference', $request->payment['id'])->first();
+
         if (! $payment) { return; }
+        
         $payment->delete();
     }
 }

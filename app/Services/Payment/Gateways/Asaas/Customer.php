@@ -2,36 +2,36 @@
 
 namespace App\Services\Payment\Gateways\Asaas;
 
-use App\Models\Client;
+use App\Models\Customer as AppCustomer;
 use App\Services\Payment\Contracts\CustomerInterface;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
 
 class Customer implements CustomerInterface
 {
-    public function __construct()
-    {
+    public function __construct(
+        private HttpClient $httpClient
+    ) {
         if (app()->environment('testing')) { return; }
     }
 
      /**
      * Create a new customer
      *
-     * @param Client $client
+     * @param AppCustomer $customer
      *
      * @return void
      */
-    public function create(Client $client): void
+    public function create(AppCustomer $customer): void
     {
         try {
-            $response = $this->request($client);
+            $response = $this->request($customer);
 
-            $client->paymentGatewaySettings()
+            $customer->paymentGatewaySettings()
                 ->create([
-                    'name'              => 'Asaas',
-                    'gateway_client_id' => $response->collect()['id'],
+                    'name'                => 'ASAAS',
+                    'gateway_customer_id' => $response->collect()['id'],
                 ]);
         } catch (RequestException $e) {
             Log::error($e->getMessage(), [
@@ -54,24 +54,19 @@ class Customer implements CustomerInterface
     /**
      * Request to create a new customer
      *
-     * @param Client $client
+     * @param AppCustomer $customer
      *
      * @return \Illuminate\Http\Client\Response
      * @throws \Illuminate\Http\Client\RequestException
      */
-    private function request(Client $client): Response
+    private function request(AppCustomer $customer): Response
     {
-        return Http::withHeaders([
-                'Content-Type'  => 'application/json',
-                'Accept'        => 'application/json',
-                'User-Agent'    => config('app.name'),
-                'access_token'  => config('asaas.api_key'),
-            ])->post(config('asaas.api_url') . '/customers', [
-                'name'          => $client->user->name,
-                'cpfCnpj'       => $client->cpf_cnpj,
-                'email'         => $client->email,
-                'phone'         => $client->phone,
-                'mobilePhone'   => $client->mobile_phone
-            ])->throw();
+        return $this->httpClient->post('/customers', [
+                'name'          => $customer->user->name,
+                'cpfCnpj'       => $customer->cpf_cnpj,
+                'email'         => $customer->email,
+                'phone'         => $customer->phone,
+                'mobilePhone'   => $customer->mobile_phone
+            ]);
     }
 }

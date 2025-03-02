@@ -2,7 +2,7 @@
 
 namespace Tests\Traits;
 
-use App\Models\Client;
+use App\Models\Customer;
 use App\Services\Payment\Contracts\CustomerInterface;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
@@ -19,13 +19,13 @@ trait MockPaymentGateway
     protected function mockPaymentGatewayCustomer()
     {
         app()->instance(CustomerInterface::class, Mockery::mock(CustomerInterface::class, [
-            'create' => function(Client $client) {
+            'create' => function(Customer $customer) {
                 $data = [
-                    'name'          => $client->user->name,
-                    'cpfCnpj'       => $client->cpf_cnpj,
-                    'email'         => $client->email,
-                    'phone'         => $client->phone,
-                    'mobilePhone'   => $client->mobile_phone
+                    'name'          => $customer->user->name,
+                    'cpfCnpj'       => $customer->cpf_cnpj,
+                    'email'         => $customer->email,
+                    'phone'         => $customer->phone,
+                    'mobilePhone'   => $customer->mobile_phone
                 ];
 
                 $mockResponse = new Response(new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], json_encode($data)));
@@ -35,25 +35,25 @@ trait MockPaymentGateway
         ]));
     }
 
-    protected function mockCreateCustomerOnPaymentGateway(Client $client)
+    protected function mockCreateCustomerOnPaymentGateway(Customer $customer)
     {
         $data = [
-            'name'          => $client->user->name,
-            'cpfCnpj'       => $client->cpf_cnpj,
-            'email'         => $client->email,
-            'phone'         => $client->phone,
-            'mobilePhone'   => $client->mobile_phone
+            'name'          => $customer->user->name,
+            'cpfCnpj'       => $customer->cpf_cnpj,
+            'email'         => $customer->email,
+            'phone'         => $customer->phone,
+            'mobilePhone'   => $customer->mobile_phone
         ];
 
         $mockResponse = new Response(new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], json_encode($data)));
 
         Http::fake([
-            'https://api.asaas.com/v3/customers' => $mockResponse,
+            config('asaas.api_url') . '/customers' => $mockResponse,
         ]);
 
-        $client->paymentGatewaySettings()->create([
-            'name'              => 'Testing',
-            'gateway_client_id' => '123'
+        $customer->paymentGatewaySettings()->create([
+            'name'                => 'Testing',
+            'gateway_customer_id' => '123'
         ]);
     }
 }

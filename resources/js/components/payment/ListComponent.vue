@@ -1,5 +1,6 @@
 <template>
-    <navbar-component></navbar-component>
+    <loading-component :isLoading="isLoading" />
+    <navbar-component />
     <div class="container pt-5 pb-5">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h3>Lista de Pagamentos</h3>
@@ -83,13 +84,16 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import NavbarComponent from '../template/NavbarComponent.vue';
+import LoadingComponent from '../template/LoadingComponent.vue';
 
 export default {
     name: 'PaymentListComponent',
     components: {
         NavbarComponent,
+        LoadingComponent
     },
     setup() {
+        const isLoading = ref(true);
         const payments = ref([]);
         const pagination = ref({
             current_page: 1,
@@ -119,6 +123,8 @@ export default {
                 };
             } catch (error) {
                 console.error('Erro ao buscar pagamentos:', error);
+            } finally {
+                isLoading.value = false;
             }
         };
 
@@ -130,6 +136,7 @@ export default {
             payments,
             pagination,
             fetchPayments,
+            isLoading,
         };
     },
 };

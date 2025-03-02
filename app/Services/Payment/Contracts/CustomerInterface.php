@@ -2,16 +2,16 @@
 
 namespace App\Services\Payment\Contracts;
 
-use App\Models\Client;
+use App\Models\Customer as AppCustomer;
 
 interface CustomerInterface
 {
     /**
      * Create a new customer
      *
-     * @param Client $client
+     * @param AppCustomer $customer
      *
      * @return void
      */
-    public function create(Client $client): void;
+    public function create(AppCustomer $customer): void;
 }

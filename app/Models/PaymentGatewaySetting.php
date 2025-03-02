@@ -13,11 +13,11 @@ class PaymentGatewaySetting extends Model
 
     protected $fillable = [
         'name',
-        'gateway_client_id',
+        'gateway_customer_id',
     ];
 
-    public function client(): BelongsTo
+    public function customer(): BelongsTo
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(Customer::class);
     }
 }

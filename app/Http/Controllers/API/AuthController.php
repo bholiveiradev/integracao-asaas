@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Events\ClientCreated;
+use App\Events\CustomerCreated;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\{AuthLoginRequest, AuthRegisterRequest};
@@ -21,13 +21,13 @@ class AuthController extends Controller
      */
     public function register(AuthRegisterRequest $request): JsonResponse
     {
-        $data = $request->except('password_confirmation');
+        $data       = $request->except('password_confirmation');
 
-        $user = User::create($data);
+        $user       = User::create($data);
 
-        $client = $user->client()->create($data);
+        $customer   = $user->customer()->create($data);
 
-        ClientCreated::dispatch($client);
+        CustomerCreated::dispatch($customer);
 
         return response()->json(['message' => 'User was created.'], Response::HTTP_CREATED);
     }

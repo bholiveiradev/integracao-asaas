@@ -2,5 +2,4 @@
 
 namespace App\Services\Payment\Contracts;
 
-interface ChargeInterface
-{}
+interface ChargeInterface {}

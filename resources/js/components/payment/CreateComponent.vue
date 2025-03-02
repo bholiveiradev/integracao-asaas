@@ -89,7 +89,7 @@
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label for="address_complement" class="form-label">Compl. do Endereço <small>(Opctional)</small></label>
+                                <label for="address_complement" class="form-label">Compl. do Endereço <small>(Opcional)</small></label>
                                 <input type="text" class="form-control" id="address_complement"
                                     v-model="formData.address_complement" />
                             </div>

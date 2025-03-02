@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\{Client, User};
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        $user->client()->create([
+        $user->customer()->create([
             'cpf_cnpj'      => fake()->cpf(), // format: 059.949.230-95 or 05994923095
             'phone'         => fake()->landlineNumber(), // format: (11) 9999-9999
             'mobile_phone'  => fake()->cellphoneNumber(), // format: (11) 99999-9999
@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
 
         User::factory(10)->create()
             ->each(function ($user) {
-                $user->client()->create([
+                $user->customer()->create([
                     'cpf_cnpj'      => fake()->cpf(),
                     'phone'         => fake()->landlineNumber(),
                     'mobile_phone'  => fake()->cellphoneNumber(),

@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\{Payment, User, Client};
+use App\Models\{Payment, User, Customer};
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -16,7 +16,7 @@ afterEach(function () {
 it('should return the paginated list of payments', function () {
     $user = User::factory()->create();
 
-    $client = $user->client()->create([
+    $customer = $user->customer()->create([
         'cpf_cnpj'      => fake()->cpf(),
         'phone'         => fake()->landlineNumber(),
         'mobile_phone'  => fake()->cellphoneNumber(),
@@ -24,7 +24,7 @@ it('should return the paginated list of payments', function () {
     ]);
 
     Payment::factory(10)->create([
-        'client_id'     => $client->id,
+        'customer_id'     => $customer->id,
         'gateway_name'  => 'Testing',
         'processing'    => false,
     ]);
@@ -42,7 +42,7 @@ it('should return the paginated list of payments', function () {
 it('should return the payment by id', function () {
     $user = User::factory()->create();
 
-    $client = $user->client()
+    $customer = $user->customer()
         ->create([
             'cpf_cnpj'      => fake()->cpf(), // format: 059.949.230-95 or 05994923095
             'phone'         => fake()->landlineNumber(), // format: (11) 9999-9999
@@ -51,7 +51,7 @@ it('should return the payment by id', function () {
         ]);
 
     $payment = Payment::factory()->create([
-        'client_id'     => $client->id,
+        'customer_id'     => $customer->id,
         'processing'    => false,
     ]);
 
@@ -71,7 +71,7 @@ it('should return 404 error on not found payment', function () {
 it('should return 403 error on not authorized payment view', function () {
     $user = User::factory()->create();
 
-    $client = $user->client()
+    $customer = $user->customer()
         ->create([
             'cpf_cnpj'      => fake()->cpf(), // format: 059.949.230-95 or 05994923095
             'phone'         => fake()->landlineNumber(), // format: (11) 9999-9999
@@ -80,12 +80,12 @@ it('should return 403 error on not authorized payment view', function () {
         ]);
 
     $payment = Payment::factory()->create([
-        'client_id'     => $client->id,
+        'customer_id'     => $customer->id,
         'processing'    => false,
     ]);
 
     $otherUser = User::factory()->create();
-    $otherUser->client()->create();
+    $otherUser->customer()->create();
 
     $response = $this->actingAs($otherUser)->get("/api/payments/{$payment->id}");
 
@@ -95,7 +95,7 @@ it('should return 403 error on not authorized payment view', function () {
 it('should create a payment with valid data', function () {
     $user = User::factory()->create();
 
-    $user->client()->create([
+    $user->customer()->create([
         'cpf_cnpj'      => fake()->cpf(),
         'phone'         => fake()->landlineNumber(),
         'mobile_phone'  => fake()->cellphoneNumber(),
@@ -121,7 +121,7 @@ it('should create a payment with valid data', function () {
 it('should return 422 error on creating payment with invalid data', function () {
     $user = User::factory()->create();
 
-    $user->client()->create([
+    $user->customer()->create([
         'cpf_cnpj'      => fake()->cpf(),
         'phone'         => fake()->landlineNumber(),
         'mobile_phone'  => fake()->cellphoneNumber(),
@@ -145,7 +145,7 @@ it('should return 422 error on creating payment with invalid data', function () 
 it('should return 422 error when billing type is CREDIT_CARD and invalid data', function () {
     $user = User::factory()->create();
 
-    $user->client()->create([
+    $user->customer()->create([
         'cpf_cnpj'      => fake()->cpf(),
         'phone'         => fake()->landlineNumber(),
         'mobile_phone'  => fake()->cellphoneNumber(),
@@ -182,14 +182,14 @@ it('should return 422 error when billing type is CREDIT_CARD and invalid data', 
 it('should handles exceptions during payment creation', function () {
     Event::fake();
 
-    Mockery::mock(Client::class, function ($mock) {
+    Mockery::mock(Customer::class, function ($mock) {
         $mock->shouldReceive('payments')
              ->andThrow(new \Exception('Simulated error'));
     });
 
     $user = User::factory()->create();
 
-    $client = $user->client()->create([
+    $customer = $user->customer()->create([
         'cpf_cnpj'      => fake()->cpf(),
         'phone'         => fake()->landlineNumber(),
         'mobile_phone'  => fake()->cellphoneNumber(),
@@ -213,6 +213,6 @@ it('should handles exceptions during payment creation', function () {
     expect($response)->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
 
     $this->assertDatabaseMissing('payments', [
-        'client_id' => $client->id
+        'customer_id' => $customer->id
     ]);
 });

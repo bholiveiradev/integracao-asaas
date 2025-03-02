@@ -35,8 +35,8 @@ class Payment extends Model
         });
     }
 
-    public function client()
+    public function customer()
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(Customer::class);
     }
 }
