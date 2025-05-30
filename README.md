@@ -29,8 +29,8 @@ O frontend utiliza componentes Vue.js juntamente com Blade.
 
 #### Passo 1: Clonar o Repositório
 ```sh
-git clone git@github.com:bholiveiradev/perfectpay.git
-cd perfectpay
+git clone git@github.com:bholiveiradev/integracao-asaas.git
+cd integracao-asaas
 ```
 #### Passo 2: Configurar o Laravel Sail
 
@@ -46,7 +46,7 @@ APP_FAKER_LOCALE=pt_BR
 DB_CONNECTION=mysql
 DB_HOST=mysql
 DB_PORT=3306
-DB_DATABASE=perfectpay
+DB_DATABASE=integracao-asaas
 DB_USERNAME=sail
 DB_PASSWORD=password
 
